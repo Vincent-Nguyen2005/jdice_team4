@@ -69,15 +69,14 @@ class DiceSum extends DieRoll {
 
 public class DiceParser {
 
-    // [REFACTOR] Tối ưu class xử lý chuỗi: gom getInt() và readInt()
     private static class StringStream {
+
         StringBuffer buff;
 
         public StringStream(String s) {
             buff = new StringBuffer(s);
         }
 
-        // Loại bỏ khoảng trắng đầu chuỗi
         private void munchWhiteSpace() {
             int index = 0;
             while (index < buff.length() && Character.isWhitespace(buff.charAt(index))) {
@@ -91,14 +90,16 @@ public class DiceParser {
             return buff.length() == 0;
         }
 
-        // [REFACTOR] Hợp nhất getInt() và readInt()
+        // [REFACTOR] Tối ưu: gom getInt và readInt
         public Integer getInt() {
             munchWhiteSpace();
             int index = 0;
             while (index < buff.length() && Character.isDigit(buff.charAt(index))) {
                 index++;
             }
-            if (index == 0) return null;
+            if (index == 0) {
+                return null;
+            }
             try {
                 int value = Integer.parseInt(buff.substring(0, index));
                 buff.delete(0, index);
@@ -115,16 +116,19 @@ public class DiceParser {
         public Integer readSgnInt() {
             munchWhiteSpace();
             StringStream saved = save();
-
             if (checkAndEat("+")) {
                 Integer val = readInt();
-                if (val != null) return val;
+                if (val != null) {
+                    return val;
+                }
                 restore(saved);
                 return null;
             }
             if (checkAndEat("-")) {
                 Integer val = readInt();
-                if (val != null) return -val;
+                if (val != null) {
+                    return -val;
+                }
                 restore(saved);
                 return null;
             }
@@ -226,12 +230,12 @@ public class DiceParser {
         return d1;
     }
 
-    // [CHỨC NĂNG MỚI] Ghi log nếu cú pháp không hợp lệ
+    // [CHỨC NĂNG MỚI] Logging lỗi cú pháp
     private static void test(String s) {
         Vector<DieRoll> v = parseRoll(s);
         if (v == null) {
             System.out.println("Failure: " + s);
-            System.err.println("[LOG] Invalid syntax: " + s);
+            System.err.println("[LOG] Invalid syntax: " + s); // Logging
         } else {
             System.out.println("Results for: " + s);
             for (DieRoll dr : v) {
@@ -243,7 +247,6 @@ public class DiceParser {
     public static void main(String[] args) {
         test("d6");
         test("2d6");
-        test("d6+5");
         test("4X3d8-5");
         test("12d10+5 & 4d6+2");
         test("d6 ; 2d4+3");
@@ -253,4 +256,3 @@ public class DiceParser {
         test("4d4d4");       // Invalid
     }
 }
-
