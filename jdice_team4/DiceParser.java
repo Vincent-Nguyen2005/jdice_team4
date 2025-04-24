@@ -69,16 +69,15 @@ class DiceSum extends DieRoll {
 
 public class DiceParser {
 
-    // [REFACTOR] Class giúp phân tích chuỗi đầu vào thành token số và toán tử
+    // [REFACTOR] Tối ưu class xử lý chuỗi: gom getInt() và readInt()
     private static class StringStream {
-
         StringBuffer buff;
 
         public StringStream(String s) {
             buff = new StringBuffer(s);
         }
 
-        // [REFACTOR] Xoá khoảng trắng thừa ở đầu chuỗi
+        // Loại bỏ khoảng trắng đầu chuỗi
         private void munchWhiteSpace() {
             int index = 0;
             while (index < buff.length() && Character.isWhitespace(buff.charAt(index))) {
@@ -94,47 +93,38 @@ public class DiceParser {
 
         // [REFACTOR] Hợp nhất getInt() và readInt()
         public Integer getInt() {
-            return readInt();
-        }
-
-        public Integer readInt() {
             munchWhiteSpace();
             int index = 0;
             while (index < buff.length() && Character.isDigit(buff.charAt(index))) {
                 index++;
             }
-
-            if (index == 0) {
-                return null;
-            }
-
+            if (index == 0) return null;
             try {
                 int value = Integer.parseInt(buff.substring(0, index));
                 buff.delete(0, index);
                 return value;
-            } catch (Exception e) {
+            } catch (NumberFormatException e) {
                 return null;
             }
         }
 
-        // Đọc số có dấu (vd: +5, -2)
+        public Integer readInt() {
+            return getInt();
+        }
+
         public Integer readSgnInt() {
             munchWhiteSpace();
             StringStream saved = save();
 
             if (checkAndEat("+")) {
                 Integer val = readInt();
-                if (val != null) {
-                    return val;
-                }
+                if (val != null) return val;
                 restore(saved);
                 return null;
             }
             if (checkAndEat("-")) {
                 Integer val = readInt();
-                if (val != null) {
-                    return -val;
-                }
+                if (val != null) return -val;
                 restore(saved);
                 return null;
             }
@@ -263,3 +253,4 @@ public class DiceParser {
         test("4d4d4");       // Invalid
     }
 }
+
