@@ -1,56 +1,51 @@
-import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 
-/*
-JDice: Java Dice Rolling Program
-Copyright (C) 2006 Andrew D. Hilton  (adhilton@cis.upenn.edu)
-
-This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License
-as published by the Free Software Foundation; either version 2
-of the License, or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-*/
-
+/**
+ * DieRoll: Class mô phỏng việc tung xúc xắc với số lượng và phần thưởng tùy chọn.
+ */
 public class DieRoll {
-    private int ndice;
-    private int nsides;
-    private int bonus; // Sửa từ 'integer' thành 'int'
-    private static Random rnd;
+    private final int ndice;
+    private final int nsides;
+    private final int bonus;
 
-    static {
-        rnd = new Random();
-    }
-
-    public DieRoll(int ndice, int nsides, int bonus) { // Sửa tên hàm khởi tạo
+    /**
+     * Constructor để khởi tạo một đối tượng xúc xắc.
+     * @param ndice Số lượng xúc xắc
+     * @param nsides Số mặt trên mỗi xúc xắc
+     * @param bonus Giá trị cộng thêm vào kết quả cuối cùng
+     * @throws IllegalArgumentException nếu đầu vào không hợp lệ
+     */
+    public DieRoll(int ndice, int nsides, int bonus) {
+        if (ndice <= 0 || nsides <= 1) {
+            throw new IllegalArgumentException("Số xúc xắc phải > 0 và số mặt > 1");
+        }
         this.ndice = ndice;
         this.nsides = nsides;
         this.bonus = bonus;
     }
 
+    /**
+     * Tung xúc xắc và trả về kết quả.
+     * @return Đối tượng RollResult chứa kết quả tung và tổng điểm
+     */
     public RollResult makeRoll() {
-        RollResult r = new RollResult(bonus);
+        RollResult result = new RollResult(bonus);
         for (int i = 0; i < ndice; i++) {
-            int roll = rnd.nextInt(nsides) + 1;
-            r.addResult(roll); // Sửa lỗi cú pháp
+            int roll = ThreadLocalRandom.current().nextInt(1, nsides + 1);
+            result.addResult(roll);
         }
-        return r;
+        return result;
     }
 
+    @Override
     public String toString() {
-        String ans = ndice + "d" + nsides;
+        StringBuilder sb = new StringBuilder();
+        sb.append(ndice).append("d").append(nsides);
         if (bonus > 0) {
-            ans += "+" + bonus;
+            sb.append("+").append(bonus);
         } else if (bonus < 0) {
-            ans += bonus; // bonus là số âm nên tự thêm dấu '-'
+            sb.append(bonus); // bonus âm đã bao gồm dấu '-'
         }
-        return ans;
+        return sb.toString();
     }
 }
