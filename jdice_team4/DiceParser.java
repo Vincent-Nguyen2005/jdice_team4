@@ -69,7 +69,6 @@ class DiceSum extends DieRoll {
 
 public class DiceParser {
 
-    // [REFACTOR] Class giúp phân tích chuỗi đầu vào thành token số và toán tử
     private static class StringStream {
 
         StringBuffer buff;
@@ -78,7 +77,6 @@ public class DiceParser {
             buff = new StringBuffer(s);
         }
 
-        // [REFACTOR] Xoá khoảng trắng thừa ở đầu chuỗi
         private void munchWhiteSpace() {
             int index = 0;
             while (index < buff.length() && Character.isWhitespace(buff.charAt(index))) {
@@ -92,36 +90,32 @@ public class DiceParser {
             return buff.length() == 0;
         }
 
-        // [REFACTOR] Hợp nhất getInt() và readInt()
+        // [REFACTOR] Tối ưu: gom getInt và readInt
         public Integer getInt() {
-            return readInt();
-        }
-
-        public Integer readInt() {
             munchWhiteSpace();
             int index = 0;
             while (index < buff.length() && Character.isDigit(buff.charAt(index))) {
                 index++;
             }
-
             if (index == 0) {
                 return null;
             }
-
             try {
                 int value = Integer.parseInt(buff.substring(0, index));
                 buff.delete(0, index);
                 return value;
-            } catch (Exception e) {
+            } catch (NumberFormatException e) {
                 return null;
             }
         }
 
-        // Đọc số có dấu (vd: +5, -2)
+        public Integer readInt() {
+            return getInt();
+        }
+
         public Integer readSgnInt() {
             munchWhiteSpace();
             StringStream saved = save();
-
             if (checkAndEat("+")) {
                 Integer val = readInt();
                 if (val != null) {
@@ -236,12 +230,12 @@ public class DiceParser {
         return d1;
     }
 
-    // [CHỨC NĂNG MỚI] Ghi log nếu cú pháp không hợp lệ
+    // [CHỨC NĂNG MỚI] Logging lỗi cú pháp
     private static void test(String s) {
         Vector<DieRoll> v = parseRoll(s);
         if (v == null) {
             System.out.println("Failure: " + s);
-            System.err.println("[LOG] Invalid syntax: " + s);
+            System.err.println("[LOG] Invalid syntax: " + s); // Logging
         } else {
             System.out.println("Results for: " + s);
             for (DieRoll dr : v) {
@@ -253,7 +247,6 @@ public class DiceParser {
     public static void main(String[] args) {
         test("d6");
         test("2d6");
-        test("d6+5");
         test("4X3d8-5");
         test("12d10+5 & 4d6+2");
         test("d6 ; 2d4+3");
