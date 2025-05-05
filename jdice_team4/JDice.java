@@ -61,7 +61,6 @@ public class JDice {
         }
 
         public void actionPerformed(ActionEvent e) {
-
             if (e.getWhen() == lastEvent) {
                 return;
             }
