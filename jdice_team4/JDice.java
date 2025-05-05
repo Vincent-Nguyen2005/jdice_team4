@@ -23,17 +23,25 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
  */
 public class JDice {
+
     static final String CLEAR = "Clear";
     static final String ROLL = "Roll Selection";
     static final String SHOW_TOTAL = "Show Total"; //nút mới
 
     static void showError(String s) {
-        System.out.println("ERROR!");
+        JOptionPane.showMessageDialog(
+                null,
+                "Error: " + s,
+                "Type Error",
+                JOptionPane.ERROR_MESSAGE
+        );
     }
 
     private static class JDiceListener implements ActionListener {
+
         Vector<String> listItems;
         JList resultList;
         JComboBox inputBox;
@@ -60,6 +68,11 @@ public class JDice {
             lastEvent = e.getWhen();
             if (e.getSource() instanceof JComboBox
                     || e.getActionCommand().equals(ROLL)) {
+                Object selectedItem = inputBox.getSelectedItem();
+                if (selectedItem == null) {
+                    showError("Vui lòng chọn hoặc nhập giá trị xúc xắc!");
+                    return;
+                }
                 String s = inputBox.getSelectedItem().toString();
                 String[] arr = s.split("=");
                 String name = "";
@@ -101,7 +114,7 @@ public class JDice {
                 prepend = "  ";
             }
             int[] selectionIndices = new int[start + v.size()];
-            int rollTotal = 0; 
+            int rollTotal = 0;
             for (i = 0; i < v.size(); i++) {
                 DieRoll dr = v.get(i);
                 RollResult rr = (RollResult) dr.makeRoll();
@@ -121,7 +134,9 @@ public class JDice {
             }
             resultList.setListData(listItems);
             resultList.setSelectedIndices(selectionIndices);
+
         }
+
         void showTotal() {
             // Hiển thị tổng số điểm tích lũy
             listItems.add(0, "Cumulative Total: " + currentTotal);
@@ -129,7 +144,7 @@ public class JDice {
             resultList.setSelectedIndices(new int[]{0});
         }
     }
-    
+
     public static void main(String[] args) {
         Vector<String> v = new Vector<String>();
         if (args.length >= 1) {
@@ -144,6 +159,7 @@ public class JDice {
                 System.err.println("Could not read input file: " + args[0]);
                 System.err.println("***********\n**********\n");
             }
+
         }
         JFrame jf = new JFrame("Dice Roller");
         Container c = jf.getContentPane();
@@ -151,6 +167,10 @@ public class JDice {
         JList jl = new JList<String>();
         c.add(jl, BorderLayout.CENTER);
         JComboBox jcb = new JComboBox(v);
+        if (v.isEmpty()) {
+            v.add("1d6"); // Giá trị mặc định
+        }
+        jcb.setSelectedIndex(0);
         jcb.setEditable(true);
         c.add(jcb, BorderLayout.NORTH);
         JDiceListener jdl = new JDiceListener(jl, jcb);
