@@ -30,8 +30,11 @@ public class DieRoll {
      * @throws IllegalArgumentException nếu các giá trị không hợp lệ
      */
     private void validateInput(int ndice, int nsides) {
-        if (ndice <= 0 || nsides <= 1) {
-            throw new IllegalArgumentException("Số xúc xắc phải > 0 và số mặt phải > 1");
+        if (ndice <= 0) {
+            throw new IllegalArgumentException("Số lượng xúc xắc phải lớn hơn 0.");
+        }
+        if (nsides <= 1) {
+            throw new IllegalArgumentException("Số mặt của xúc xắc phải lớn hơn 1.");
         }
     }
 
@@ -56,15 +59,16 @@ public class DieRoll {
         return makeRoll().getTotal() + bonus;
     }
 
+    /**
+     * Tính trung bình của tất cả các kết quả tung xúc xắc.
+     * @return Trung bình điểm của tất cả các xúc xắc cộng với phần thưởng
+     */
+    public double getAverageRoll() {
+        return (double) getTotalRoll() / ndice;
+    }
+
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(ndice).append("d").append(nsides);
-        
-        if (bonus != 0) {
-            sb.append(bonus > 0 ? "+" : "").append(bonus);
-        }
-        
-        return sb.toString();
+        return String.format("%dd%d%s", ndice, nsides, (bonus != 0 ? (bonus > 0 ? "+" : "") + bonus : ""));
     }
 }
