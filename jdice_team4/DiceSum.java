@@ -1,39 +1,48 @@
-/*
-JDice: Java Dice Rolling Program
-Copyright (C) 2006 Andrew D. Hilton  (adhilton@cis.upenn.edu)
-
-
-This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License
-as published by the Free Software Foundation; either version 2
-of the License, or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-
+/**
+ * Represents the sum of two DieRoll operations.
+ * Ensures that both rolls are valid and combines their results.
+ * 
+ * JDice: Java Dice Rolling Program
+ * Licensed under GNU General Public License v2 or later.
+ * 
+ * @author Andrew D. Hilton
  */
-
 public class DiceSum {
-    private final DieRoll r1;
-    private final DieRoll r2;
 
-    public DiceSum(DieRoll r1, DieRoll r2) {
-        this.r1 = r1;
-        this.r2 = r2;
+    private final DieRoll firstRoll;
+    private final DieRoll secondRoll;
+
+    /**
+     * Constructs a DiceSum with two DieRolls.
+     *
+     * @param firstRoll the first die roll
+     * @param secondRoll the second die roll
+     * @throws IllegalArgumentException if either roll is null
+     */
+    public DiceSum(DieRoll firstRoll, DieRoll secondRoll) {
+        if (firstRoll == null || secondRoll == null) {
+            throw new IllegalArgumentException("DieRoll instances cannot be null.");
+        }
+        this.firstRoll = firstRoll;
+        this.secondRoll = secondRoll;
     }
 
+    /**
+     * Executes both DieRolls and combines their results.
+     *
+     * @return the combined RollResult
+     */
     public RollResult makeRoll() {
-        return r1.makeRoll().andThen(r2.makeRoll());
+        return firstRoll.makeRoll().andThen(secondRoll.makeRoll());
     }
 
+    /**
+     * Returns a string representation of the DiceSum.
+     *
+     * @return formatted string with both die rolls
+     */
     @Override
     public String toString() {
-        return String.format("%s + %s", r1, r2);
+        return String.format("DiceSum[firstRoll=%s, secondRoll=%s]", firstRoll, secondRoll);
     }
 }
