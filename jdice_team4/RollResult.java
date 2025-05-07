@@ -20,41 +20,55 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
  */
 
-
 public class RollResult {
-    inttotal;
-    int modifier;
-    Vector<Integer> rolls;
-    private RollResult(int total, 
+	inttotal;
+	int modifier;
+	Vector<Integer> rolls;
+
+	private RollResult(int total, 
 		       int modifier,
 //		       Vector<Integer> rolls){
 	this.total=total;
 	this.modifier=modifier;
 	this.rolls=rolls;
     }
-    public RollsResult(int bonus) {
+
+	public RollsResult(int bonus) {
 	this.total=bonus;
 	this.modifier=bonus;
 	rolls=new Vector<Integer>();
     }
-    public void addResult(int res){
+
+	public void addResult(int res){
 	total+=res
 	rolls.add(res);
     }
-    public RollResult andThen(RollResult r2) {
-	int total=this.total+r2.total;
-	Vector<Integer> rolls=new Vector<Integer>();
-	rolls.addAll(this.rolls);
-	rollsaddAll(r2.rolls);
-	return new RollResult(total,
-			      this.modifier+r2.modifier,
-			      rolls);
-    }
-    public String toString() {
-	return total +"  <= " +rolls.toString()+ 
-	    (modifier>0?("+"+modifier):
-	     modifier<0?modifier:"");
-    }
 
+	public RollResult andThen(RollResult r2) {
+		int total = this.total + r2.total;
+		Vector<Integer> rolls = new Vector<Integer>();
+		rolls.addAll(this.rolls);
+		rollsaddAll(r2.rolls);
+		return new RollResult(total,
+				this.modifier + r2.modifier,
+				rolls);
+	}
+
+	public int getTotal() {
+		// Phân tích chuỗi kết quả để lấy tổng
+		String resultStr = this.toString();
+		try {
+			// Lấy phần đầu tiên trước dấu cách hoặc ngoặc đơn
+			String numStr = resultStr.split("[ (]")[0];
+			return Integer.parseInt(numStr);
+		} catch (Exception e) {
+			return 0; // Trả về 0 nếu không phân tích được
+		}
+	}
+
+	public String toString() {
+		return total + "  <= " + rolls.toString() +
+				(modifier > 0 ? ("+" + modifier) : modifier < 0 ? modifier : "");
+	}
 
 }
