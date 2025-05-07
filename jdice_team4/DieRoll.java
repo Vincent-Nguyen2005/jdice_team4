@@ -17,25 +17,17 @@ public class DieRoll {
      * @throws IllegalArgumentException nếu đầu vào không hợp lệ
      */
     public DieRoll(int ndice, int nsides, int bonus) {
-        validateInput(ndice, nsides);
-        this.ndice = ndice;
-        this.nsides = nsides;
-        this.bonus = bonus;
-    }
-
-    /**
-     * Phương thức kiểm tra tính hợp lệ của đầu vào.
-     * @param ndice Số lượng xúc xắc
-     * @param nsides Số mặt của mỗi xúc xắc
-     * @throws IllegalArgumentException nếu các giá trị không hợp lệ
-     */
-    private void validateInput(int ndice, int nsides) {
+        // Kiểm tra đầu vào và hợp lý hóa
         if (ndice <= 0) {
             throw new IllegalArgumentException("Số lượng xúc xắc phải lớn hơn 0.");
         }
         if (nsides <= 1) {
             throw new IllegalArgumentException("Số mặt của xúc xắc phải lớn hơn 1.");
         }
+        
+        this.ndice = ndice;
+        this.nsides = nsides;
+        this.bonus = bonus;
     }
 
     /**
@@ -56,7 +48,7 @@ public class DieRoll {
      * @return Tổng điểm của tất cả các xúc xắc cộng với phần thưởng
      */
     public int getTotalRoll() {
-        return makeRoll().getTotal() + bonus;
+        return IntStream.range(0, ndice).map(i -> ThreadLocalRandom.current().nextInt(1, nsides + 1)).sum() + bonus;
     }
 
     /**
@@ -69,6 +61,7 @@ public class DieRoll {
 
     @Override
     public String toString() {
+        // Sử dụng String.format để tạo chuỗi dễ đọc hơn
         return String.format("%dd%d%s", ndice, nsides, (bonus != 0 ? (bonus > 0 ? "+" : "") + bonus : ""));
     }
 }
