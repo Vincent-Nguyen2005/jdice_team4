@@ -59,9 +59,9 @@ public class DieRoll {
         return (double) getTotalRoll() / ndice;
     }
 
-    @Override
-    public String toString() {
-        // Sử dụng String.format để tạo chuỗi dễ đọc hơn
-        return String.format("%dd%d%s", ndice, nsides, (bonus != 0 ? (bonus > 0 ? "+" : "") + bonus : ""));
-    }
+  @Override
+public String toString() {
+    return String.format("%dd%d%s", ndice, nsides, 
+        (bonus != 0 ? (bonus > 0 ? " cộng " : " trừ ") + Math.abs(bonus) : ""));
+}
 }
