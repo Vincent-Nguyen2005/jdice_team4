@@ -1,3 +1,5 @@
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.IntStream;
 
@@ -9,6 +11,9 @@ public class DieRoll {
     private final int nsides;
     private final int bonus;
 
+    // Đối tượng Statistics để lưu trữ và tính toán thống kê
+    private Statistics statistics = new Statistics();
+
     /**
      * Constructor để khởi tạo một đối tượng xúc xắc.
      * @param ndice Số lượng xúc xắc
@@ -17,25 +22,26 @@ public class DieRoll {
      * @throws IllegalArgumentException nếu đầu vào không hợp lệ
      */
     public DieRoll(int ndice, int nsides, int bonus) {
-        validateInput(ndice, nsides);
-        this.ndice = ndice;
-        this.nsides = nsides;
-        this.bonus = bonus;
-    }
-
-    /**
-     * Phương thức kiểm tra tính hợp lệ của đầu vào.
-     * @param ndice Số lượng xúc xắc
-     * @param nsides Số mặt của mỗi xúc xắc
-     * @throws IllegalArgumentException nếu các giá trị không hợp lệ
-     */
-    private void validateInput(int ndice, int nsides) {
         if (ndice <= 0) {
             throw new IllegalArgumentException("Số lượng xúc xắc phải lớn hơn 0.");
         }
         if (nsides <= 1) {
             throw new IllegalArgumentException("Số mặt của xúc xắc phải lớn hơn 1.");
         }
+        
+        this.ndice = ndice;
+        this.nsides = nsides;
+        this.bonus = bonus;
+    }
+
+    /**
+     * Phương thức chung để tạo ra kết quả tung xúc xắc.
+     * @return Một mảng các giá trị kết quả tung xúc xắc
+     */
+    private int[] rollDice() {
+        return IntStream.range(0, ndice)
+                        .map(i -> ThreadLocalRandom.current().nextInt(1, nsides + 1))
+                        .toArray();
     }
 
     /**
@@ -44,10 +50,16 @@ public class DieRoll {
      */
     public RollResult makeRoll() {
         RollResult result = new RollResult(bonus);
+        int[] rolls = rollDice();
         
-        // Dùng IntStream để tối ưu hóa việc sinh kết quả tung xúc xắc
-        IntStream.range(0, ndice).forEach(i -> result.addResult(ThreadLocalRandom.current().nextInt(1, nsides + 1)));
-        
+        // Thêm kết quả từng xúc xắc vào kết quả
+        for (int roll : rolls) {
+            result.addResult(roll);
+        }
+
+        // Cập nhật thống kê
+        statistics.updateStats(rolls);
+
         return result;
     }
 
@@ -56,7 +68,7 @@ public class DieRoll {
      * @return Tổng điểm của tất cả các xúc xắc cộng với phần thưởng
      */
     public int getTotalRoll() {
-        return makeRoll().getTotal() + bonus;
+        return IntStream.of(rollDice()).sum() + bonus;
     }
 
     /**
@@ -67,8 +79,76 @@ public class DieRoll {
         return (double) getTotalRoll() / ndice;
     }
 
+    /**
+     * Lấy thống kê kết quả tung xúc xắc.
+     * @return Đối tượng Statistics chứa các thông tin thống kê
+     */
+    public Statistics getStatistics() {
+        return statistics;
+    }
+
     @Override
     public String toString() {
-        return String.format("%dd%d%s", ndice, nsides, (bonus != 0 ? (bonus > 0 ? "+" : "") + bonus : ""));
+        return String.format("%dd%d%s", ndice, nsides, 
+            (bonus != 0 ? (bonus > 0 ? " cộng " : " trừ ") + Math.abs(bonus) : ""));
+    }
+
+    /**
+     * Lớp Statistics lưu trữ và tính toán thống kê kết quả tung xúc xắc.
+     */
+    public static class Statistics {
+        private Map<Integer, Integer> frequency = new HashMap<>();
+        private int totalRolls = 0;
+        private int totalValue = 0;
+
+        /**
+         * Cập nhật thống kê với kết quả tung xúc xắc.
+         * @param rolls Mảng các giá trị kết quả tung xúc xắc
+         */
+        public void updateStats(int[] rolls) {
+            for (int roll : rolls) {
+                frequency.put(roll, frequency.getOrDefault(roll, 0) + 1);
+            }
+            totalRolls++;
+            totalValue += IntStream.of(rolls).sum();
+        }
+
+        /**
+         * Lấy số lần xuất hiện của mỗi giá trị.
+         * @return Map chứa số lần xuất hiện của mỗi giá trị
+         */
+        public Map<Integer, Integer> getFrequency() {
+            return frequency;
+        }
+
+        /**
+         * Lấy tổng số lần tung xúc xắc.
+         * @return Tổng số lần tung xúc xắc
+         */
+        public int getTotalRolls() {
+            return totalRolls;
+        }
+
+        /**
+         * Tính trung bình giá trị của các lần tung xúc xắc.
+         * @return Trung bình giá trị
+         */
+        public double getAverageValue() {
+            return totalRolls == 0 ? 0 : (double) totalValue / totalRolls;
+        }
+
+        /**
+         * Hiển thị thống kê.
+         * @return Chuỗi thống kê
+         */
+        @Override
+        public String toString() {
+            StringBuilder sb = new StringBuilder();
+            sb.append("Thống kê kết quả tung xúc xắc:\n");
+            sb.append("Tổng số lần tung: ").append(totalRolls).append("\n");
+            sb.append("Trung bình giá trị: ").append(getAverageValue()).append("\n");
+            sb.append("Tần suất xuất hiện của các giá trị: ").append(frequency).append("\n");
+            return sb.toString();
+        }
     }
 }
