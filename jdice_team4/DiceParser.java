@@ -234,7 +234,7 @@ public class DiceParser {
         Vector<DieRoll> v = parseRoll(s);
         if (v == null) {
             System.out.println("Failure: " + s);
-            System.err.println("[LOG] Invalid syntax: " + s); // Logging
+            System.err.println("[LOG] Invalid syntax: " + s); 
         } else {
             System.out.println("Results for: " + s);
             for (DieRoll dr : v) {
@@ -250,8 +250,8 @@ public class DiceParser {
         test("12d10+5 & 4d6+2");
         test("d6 ; 2d4+3");
         test("4d6+3 ; 8d12 -15 ; 9d10 & 3d6 & 4d12 +17");
-        test("4d6 + xyzzy"); // Invalid
-        test("hi");          // Invalid
-        test("4d4d4");       // Invalid
+        test("4d6 + xyzzy"); 
+        test("hi");          
+        test("4d4d4");       
     }
 }
