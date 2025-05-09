@@ -1,3 +1,4 @@
+HEAD
 name: Java CI with Maven
 
 on:
@@ -6,13 +7,24 @@ on:
   pull_request:
     branches: [ "**" ]
 
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+e89e56a (Add GitHub Actions workflow for testing)
+
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
+HEAD
     - name: Checkout code
       uses: actions/checkout@v4
+
+    - uses: actions/checkout@v4
+e89e56a (Add GitHub Actions workflow for testing)
 
     - name: Set up JDK 17
       uses: actions/setup-java@v4
@@ -29,4 +41,8 @@ jobs:
           ${{ runner.os }}-maven-
 
     - name: Build with Maven
+HEAD
       run: mvn clean install -DskipTests
+
+      run: mvn clean install -DskipTests
+e89e56a (Add GitHub Actions workflow for testing)
