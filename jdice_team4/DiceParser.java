@@ -1,3 +1,5 @@
+// Custom changes by Vincent-Nguyen2005 - for commit test
+
 import java.util.*;
 /*
 JDice: Java Dice Rolling Program
